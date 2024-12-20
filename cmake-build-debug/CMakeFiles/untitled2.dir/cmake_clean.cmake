@@ -1,6 +1,4 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/untitled2.dir/main.c.o"
-  "CMakeFiles/untitled2.dir/main.c.o.d"
   "CMakeFiles/untitled2.dir/src/main.c.o"
   "CMakeFiles/untitled2.dir/src/main.c.o.d"
   "untitled2"

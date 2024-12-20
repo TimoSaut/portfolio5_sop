@@ -1,5 +1,5 @@
-CC = ggc
-CFLAGS = -wall -std=c99
+CC = gcc
+CFLAGS = -Wall -std=c99
 
 TARGET = new_wc
 
@@ -8,9 +8,11 @@ OBJ = $(SRC:.c=.o)
 
 all: $(TARGET)
 
-$(OBJ): ($SRC)
-	$(CC) $(CFLAGS) -c $< -o $@
+$(TARGET): $(OBJ)
+	$(CC) $(CFLAGS) -o $(TARGET) $(OBJ)
 
+$(OBJ): $(SRC)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
 	rm -f $(OBJ) $(TARGET)
