@@ -1,20 +1,30 @@
-//
-// Created by damok on 21.12.2024.
-//
-
 #ifndef WC_FUNCTIONS_H
 #define WC_FUNCTIONS_H
 
-#include <sys/types.h>  // Für `ssize_t`
-#include <sys/stat.h>   // Für `open()` Flags
-#include <fcntl.h>      // Für `open()`
-#include <unistd.h>     // Für `read()` und `close()`
-#include <stdbool.h>    // Für `bool`
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <stdbool.h>
+#include <pthread.h>
 
-// Funktionen für Wort-, Zeichen- und Zeilenzählung
-int count_lines(const char *filename);
-int count_words(const char *filename);
-int count_characters(const char *filename);
-int count_longest_line(const char *filename);
+// Struktur um die Werte zu speichern
+typedef struct {
+    int lines;
+    int words;
+    int characters;
+    int longest_line;
+} FileStats;
 
-#endif //WC_FUNCTIONS_H
+// Struktur für Threads
+typedef struct {
+    const char *filename;
+    FileStats *stats;
+    pthread_mutex_t *mutex;
+} ThreadData;
+
+// Funktionen
+void process_file_or_stdin(const char *filename, FileStats *stats);
+void *thread_process_file(void *arg);
+
+#endif // WC_FUNCTIONS_H
