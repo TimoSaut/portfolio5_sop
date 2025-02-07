@@ -15,5 +15,6 @@
 int count_lines(const char *filename);
 int count_words(const char *filename);
 int count_characters(const char *filename);
+int count_longest_line(const char *filename);
 
 #endif //WC_FUNCTIONS_H
