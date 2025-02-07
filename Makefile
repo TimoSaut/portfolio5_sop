@@ -3,7 +3,7 @@ CFLAGS = -Wall -std=c99
 
 TARGET = new_wc
 
-SRC = src/main.c
+SRC = src/main.c src/wc_functions.c
 OBJ = $(SRC:.c=.o)
 
 all: $(TARGET)
@@ -11,7 +11,7 @@ all: $(TARGET)
 $(TARGET): $(OBJ)
 	$(CC) $(CFLAGS) -o $(TARGET) $(OBJ)
 
-$(OBJ): $(SRC)
+%.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:

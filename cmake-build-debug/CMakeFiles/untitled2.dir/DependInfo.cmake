@@ -8,8 +8,8 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "C:/Users/damok/CLionProjects/portfolio5_sop/src/main.c" "CMakeFiles/untitled2.dir/src/main.c.obj" "gcc" "CMakeFiles/untitled2.dir/src/main.c.obj.d"
-  "C:/Users/damok/CLionProjects/portfolio5_sop/src/wc_functions.c" "CMakeFiles/untitled2.dir/src/wc_functions.c.obj" "gcc" "CMakeFiles/untitled2.dir/src/wc_functions.c.obj.d"
+  "/Volumes/DEV/thws/s5/portfolio5_sop/src/main.c" "CMakeFiles/untitled2.dir/src/main.c.o" "gcc" "CMakeFiles/untitled2.dir/src/main.c.o.d"
+  "/Volumes/DEV/thws/s5/portfolio5_sop/src/wc_functions.c" "CMakeFiles/untitled2.dir/src/wc_functions.c.o" "gcc" "CMakeFiles/untitled2.dir/src/wc_functions.c.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.
