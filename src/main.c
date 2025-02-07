@@ -25,6 +25,10 @@ void help(){
       //  printf("or available locally via: info '(coreutils) wc invocation'\n");
     }
 
+int beginsWithLine(char arr[]) {
+    return arr[0] == '-';
+}
+
 void parse_args(int argc, char *argv[]) {
 
     int no_flag = 0;
@@ -41,8 +45,6 @@ void parse_args(int argc, char *argv[]) {
 
 
 
-
-
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "-l") == 0) {
             lines = 1;
@@ -56,7 +58,13 @@ void parse_args(int argc, char *argv[]) {
             human_readable = 1;
         } else if (strcmp(argv[i], "--help") == 0) {
             help_flag = 1;
-        } else if (i < argc - 1){
+        }else if (!beginsWithLine(argv[i])) {
+
+            //hier sind dann die argumente die nicht mit - beginnne -> also dateipfade oder strings (denke ich)
+
+        }
+
+        else if (i < argc - 1){
             printf("Unbekanntes Flag: %s\n", argv[i]);
             exit(1);
         }
@@ -68,32 +76,38 @@ void parse_args(int argc, char *argv[]) {
     int c;
 
 
+    FileStats stats = {0, 0, 0, 0};
+    process_file_or_stdin(file, &stats);
+
+
+
+
     if (human_readable) {
         if (lines) {
-            c = count_lines(file);
+            c = stats.lines;
             printf("File %s includes %i lines.", file, c);
         } if (words) {
-            c = count_words(file);
+            c = stats.words;
             printf("File %s includes %i words.", file, c);
         }  if (chars) {
-            c = count_characters(file);
+            c = stats.characters;
             printf("File %s includes %i characters.", file, c);
         }  if (max_line) {
-            c = count_longest_line(file);
+            c = stats.longest_line;
             printf("File %s logest line is line %i.", file, c);
         }
     } else {
         if (lines) {
-            c = count_lines(file);
+            c = stats.lines;
             printf("%i", c);
         }  if (words) {
-            c = count_words(file);
+            c = stats.words;
             printf("%i", c);
         }  if (chars) {
-            c = count_characters(file);
+            c = stats.characters;
             printf("%i", c);
         }  if (max_line) {
-            c = count_longest_line(file);
+            c = stats.longest_line;
             printf("%i", c);
         }  if (no_flag) {
             // hier alles ausgeben
