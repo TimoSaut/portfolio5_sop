@@ -8,7 +8,7 @@
 #include <stdbool.h>
 #include <pthread.h>
 
-// Struktur um die Werte zu speichern
+
 typedef struct {
     int lines;
     int words;
@@ -16,15 +16,17 @@ typedef struct {
     int longest_line;
 } FileStats;
 
-// Struktur für Threads
+
 typedef struct {
     const char *filename;
     FileStats *stats;
     pthread_mutex_t *mutex;
+    int lines, words, chars, max_line, human_readable;
 } ThreadData;
 
-// Funktionen
+
 void process_file_or_stdin(const char *filename, FileStats *stats);
+
 void *thread_process_file(void *arg);
 
 #endif // WC_FUNCTIONS_H

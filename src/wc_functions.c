@@ -7,11 +7,11 @@
 
 #define BUFFER_SIZE 1024
 
-// Datei oder stdin und struct füllen
 void process_file_or_stdin(const char *filename, FileStats *stats) {
     int fd;
-    if (filename == NULL) {
-        fd = STDIN_FILENO; // stdin wenn kein Name gegeben
+    if (filename == NULL || strcmp(filename, "-") == 0) {
+        // "-" = stdin
+        fd = STDIN_FILENO;
     } else {
         fd = open(filename, O_RDONLY);
         if (fd == -1) {
@@ -27,23 +27,23 @@ void process_file_or_stdin(const char *filename, FileStats *stats) {
 
     while ((bytes_read = read(fd, buffer, BUFFER_SIZE)) > 0) {
         for (ssize_t i = 0; i < bytes_read; i++) {
-            stats->characters++;  // Zeichen zählen
+            stats->characters++;
 
             if (buffer[i] == '\n') {
-                stats->lines++;  // Zeilen zählen
+                stats->lines++;
                 if (current_length > stats->longest_line) {
                     stats->longest_line = current_length;
                 }
-                current_length = 0;  // Länge der neuen Zeile starten
+                current_length = 0;
             } else {
                 current_length++;
             }
 
-            if (buffer[i] == ' ' || buffer[i] == '\n' || buffer[i] == '\t') {
+            if (isspace(buffer[i])) {
                 in_word = false;
             } else if (!in_word) {
                 in_word = true;
-                stats->words++;  // Wort erkannt
+                stats->words++;
             }
         }
     }
@@ -57,14 +57,8 @@ void process_file_or_stdin(const char *filename, FileStats *stats) {
     }
 }
 
-// Thread für gleichzeitiges Datei-Lesen
 void *thread_process_file(void *arg) {
-    ThreadData *data = (ThreadData *)arg;
-
-    pthread_mutex_lock(data->mutex);
+    ThreadData *data = (ThreadData *) arg;
     process_file_or_stdin(data->filename, data->stats);
-    pthread_mutex_unlock(data->mutex);
-
     return NULL;
 }
-

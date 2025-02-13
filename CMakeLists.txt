@@ -8,3 +8,4 @@ add_executable(untitled2 src/main.c
         src/wc_functions.c
         src/wc_functions.h
 )
+

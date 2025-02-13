@@ -2,124 +2,148 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-
+#include <pthread.h>
 #include "wc_functions.h"
 
+pthread_mutex_t output_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-void help(){
-        printf("With no FILE, or when FILE is -, read standard input.\n\n");
-        printf("The options below may be used to select which counts are printed, always in\n");
-        printf("the following order: newline, word, character, maximum line length.\n");
-        printf("  -m: (chars)            -> print the character counts\n");
-        printf("  -l: (lines)            -> print the newline counts\n");
-        printf("      (files0-from=F)    -> read input from the files specified by\n");
-        printf("                             NUL-terminated names in file F;\n");
-        printf("                             If F is - then read names from standard input\n");
-        printf("  -L: (max_line_length)  -> print the maximum display width\n");
-        printf("  -w: (words)            -> print the word counts\n");
-        printf("      --help     -> display this help and exit\n");
-        printf("      --version  -> output version information and exit\n\n");
-       // printf("GNU coreutils online help: <https://www.gnu.org/software/coreutils/>\n");
-        //printf("Report any translation bugs to <https://translationproject.org/team/>\n");
-       // printf("Full documentation <https://www.gnu.org/software/coreutils/wc>\n");
-      //  printf("or available locally via: info '(coreutils) wc invocation'\n");
-    }
+void help() {
+    printf("Verwendung: wc_program [OPTION]... [DATEI]...\n");
+    printf("Zählt Zeilen, Wörter, Zeichen und maximale Zeilenlänge in DATEI(en) oder stdin.\n\n");
+    printf("Optionen:\n");
+    printf("  -l        Zeilen zählen\n");
+    printf("  -w        Wörter zählen\n");
+    printf("  -c        Zeichen zählen\n");
+    printf("  -L        Längste Zeile anzeigen\n");
+    printf("  -h        Menschenlesbare Ausgabe\n");
+    printf("  --help    Diese Hilfe anzeigen\n");
+}
 
 int beginsWithLine(char arr[]) {
     return arr[0] == '-';
 }
 
-void parse_args(int argc, char *argv[]) {
-
-    int no_flag = 0;
-    int lines = 0;
-    int words = 0;
-    int chars = 0;
-    int max_line = 0;
-    int human_readable = 0;
-    int help_flag = 0;
-
-    if (argc == 2) {
-        no_flag = 1;
-    }
-
-
+void parse_args(int argc, char *argv[],
+                char ***files, int *file_count,
+                int *lines, int *words, int *chars,
+                int *max_line, int *human_readable,
+                int *help_flag) {
+    *file_count = 0;
+    *files = malloc(argc * sizeof(char *));
+    int no_flag = 1;
 
     for (int i = 1; i < argc; i++) {
-        if (strcmp(argv[i], "-l") == 0) {
-            lines = 1;
+        if (strcmp(argv[i], "--help") == 0) {
+            *help_flag = 1;
+        } else if (strcmp(argv[i], "-l") == 0) {
+            *lines = 1;
+            no_flag = 0;
         } else if (strcmp(argv[i], "-w") == 0) {
-            words = 1;
+            *words = 1;
+            no_flag = 0;
         } else if (strcmp(argv[i], "-c") == 0) {
-            chars = 1;
+            *chars = 1;
+            no_flag = 0;
         } else if (strcmp(argv[i], "-L") == 0) {
-            max_line = 1;
+            *max_line = 1;
+            no_flag = 0;
         } else if (strcmp(argv[i], "-h") == 0) {
-            human_readable = 1;
-        } else if (strcmp(argv[i], "--help") == 0) {
-            help_flag = 1;
-        }else if (!beginsWithLine(argv[i])) {
-
-            //hier sind dann die argumente die nicht mit - beginnne -> also dateipfade oder strings (denke ich)
-
-        }
-
-        else if (i < argc - 1){
-            printf("Unbekanntes Flag: %s\n", argv[i]);
-            exit(1);
+            *human_readable = 1;
+        } else if (!beginsWithLine(argv[i])) {
+            (*files)[(*file_count)++] = argv[i];
+        } else {
+            fprintf(stderr, "Unbekannte Option: %s\n", argv[i]);
+            exit(EXIT_FAILURE);
         }
     }
 
+    if (no_flag) {
+        *lines = *words = *chars = *max_line = 1;
+    }
 
-
-    const char *file = argv[argc - 1];
-    int c;
-
-
-    FileStats stats = {0, 0, 0, 0};
-    process_file_or_stdin(file, &stats);
-
-
-
-
-    if (human_readable) {
-        if (lines) {
-            c = stats.lines;
-            printf("File %s includes %i lines.", file, c);
-        } if (words) {
-            c = stats.words;
-            printf("File %s includes %i words.", file, c);
-        }  if (chars) {
-            c = stats.characters;
-            printf("File %s includes %i characters.", file, c);
-        }  if (max_line) {
-            c = stats.longest_line;
-            printf("File %s logest line is line %i.", file, c);
-        }
-    } else {
-        if (lines) {
-            c = stats.lines;
-            printf("%i", c);
-        }  if (words) {
-            c = stats.words;
-            printf("%i", c);
-        }  if (chars) {
-            c = stats.characters;
-            printf("%i", c);
-        }  if (max_line) {
-            c = stats.longest_line;
-            printf("%i", c);
-        }  if (no_flag) {
-            // hier alles ausgeben
-        } if (help_flag) {
-            help();
-        }
+    if (*file_count == 0) {
+        (*files)[(*file_count)++] = "-";
     }
 }
 
+void print_stats(ThreadData *data) {
+    pthread_mutex_lock(&output_mutex);
 
+    const char *name = strcmp(data->filename, "-") == 0
+                           ? "stdin"
+                           : data->filename;
+
+    if (data->human_readable) {
+        printf("\nDatei: %s\n", name);
+        if (data->lines) printf("Zeilen: %d\n", data->stats->lines);
+        if (data->words) printf("Wörter: %d\n", data->stats->words);
+        if (data->chars) printf("Zeichen: %d\n", data->stats->characters);
+        if (data->max_line) printf("Längste Zeile: %d\n", data->stats->longest_line);
+    } else {
+        if (data->lines) printf("%d ", data->stats->lines);
+        if (data->words) printf("%d ", data->stats->words);
+        if (data->chars) printf("%d ", data->stats->characters);
+        if (data->max_line) printf("%d ", data->stats->longest_line);
+        printf("%s\n", name);
+    }
+
+    pthread_mutex_unlock(&output_mutex);
+}
+
+void *process_file_thread(void *arg) {
+    ThreadData *data = (ThreadData *) arg;
+
+    process_file_or_stdin(
+        strcmp(data->filename, "-") == 0 ? NULL : data->filename,
+        data->stats
+    );
+
+    print_stats(data);
+    return NULL;
+}
 
 int main(int argc, char *argv[]) {
-    parse_args(argc, argv);
+    char **files = NULL;
+    int file_count = 0;
+    int lines = 0, words = 0, chars = 0, max_line = 0;
+    int human_readable = 0, help_flag = 0;
+
+    parse_args(argc, argv, &files, &file_count,
+               &lines, &words, &chars, &max_line,
+               &human_readable, &help_flag);
+
+    if (help_flag) {
+        help();
+        free(files);
+        return 0;
+    }
+
+    pthread_t *threads = malloc(file_count * sizeof(pthread_t));
+    ThreadData *thread_data = malloc(file_count * sizeof(ThreadData));
+    FileStats *stats = malloc(file_count * sizeof(FileStats));
+
+    for (int i = 0; i < file_count; i++) {
+        thread_data[i] = (ThreadData){
+            .filename = files[i],
+            .stats = &stats[i],
+            .mutex = &output_mutex,
+            .lines = lines,
+            .words = words,
+            .chars = chars,
+            .max_line = max_line,
+            .human_readable = human_readable
+        };
+        pthread_create(&threads[i], NULL, process_file_thread, &thread_data[i]);
+    }
+
+    for (int i = 0; i < file_count; i++) {
+        pthread_join(threads[i], NULL);
+    }
+
+    free(threads);
+    free(thread_data);
+    free(stats);
+    free(files);
+
     return 0;
 }
