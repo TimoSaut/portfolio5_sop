@@ -33,7 +33,7 @@ Ausführbare Datei compilieren.
 gcc -Wall -std=c99 -pthread -g -o new_wc src/main.o src/wc_functions.o
 ```
 
-Ausführung
+## Ausführung
 Das Programm kann mit einer oder mehreren Dateien oder über stdin verwendet werden.
 - Es ist möglich, einzelne oder mehrere Dateien parallel zu verarbeiten.
 - Durch das Hinzufügen von Flags kann die Ausgabe gefiltert oder lesbarer dargestellt werden.
@@ -48,12 +48,12 @@ cat test.txt | ./new_wc
 ./new_wc -l file1.txt file2.txt
 ```
 
-Threads & Synchronisation
+## Threads & Synchronisation
 - Falls mehrere Dateien angegeben werden, wird für jede Datei ein eigener Thread erstellt.
 - Jeder Thread verarbeitet und speichert die Daten unabhängig.
 - Schließlich sammelt der Hauptthread die Ergebnisse und gibt sie aus.
   
-Fehlermeldungen bei ungültigen Dateinamen und leeren Dateien
+## Fehlermeldungen bei ungültigen Dateinamen und leeren Dateien
 Falls eine Datei nicht existiert oder ein falscher Dateiname angegeben wird, gibt das Programm eine Fehlermeldung aus.
 
 ```
