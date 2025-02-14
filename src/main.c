@@ -8,15 +8,20 @@
 pthread_mutex_t output_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 void help() {
-    printf("Verwendung: wc_program [OPTION]... [DATEI]...\n");
-    printf("Zählt Zeilen, Wörter, Zeichen und maximale Zeilenlänge in DATEI(en) oder stdin.\n\n");
+    printf("\nHilfestellung zur Verwendung des new_wc Commands:\n");
+    printf("Zählt Zeilen, Wörter, Zeichen und maximale Zeilenlänge in DATEI(en) oder stdin\n\n");
     printf("Optionen:\n");
-    printf("  -l        Zeilen zählen\n");
-    printf("  -w        Wörter zählen\n");
-    printf("  -m        Zeichen zählen\n");
-    printf("  -L        Längste Zeile anzeigen\n");
-    printf("  -h        Menschenlesbare Ausgabe\n");
-    printf("  --help    Diese Hilfe anzeigen\n");
+    printf("    -l           Zeilen zählen\n");
+    printf("    -w           Wörter zählen\n");
+    printf("    -m           Zeichen zählen\n");
+    printf("    -L           Längste Zeile anzeigen\n");
+    printf("    -h           Menschenlesbare Ausgabe\n");
+    printf("    --help       Diese Hilfe anzeigen\n\n");
+    printf("Allgemeiner Aufruf:\n");
+    printf("./new_wc datei_1.txt ... datei_n.txt -flag_0 ... -flag_m (für n beliebig) (m max 5) \n\n");
+    printf("Weitere Infos zu der Funktion erhalten Sie auf diese Webseite: ");
+    printf("https://github.com/TimoSaut/portfolio5_sop\n");
+
 }
 
 int beginsWithLine(char arr[]) {
@@ -123,6 +128,12 @@ int main(int argc, char *argv[]) {
     parse_args(argc, argv, &files, &file_count,
                &lines, &words, &chars, &max_line,
                &human_readable, &help_flag);
+
+
+    if (argc == 1) {
+        help();
+        return 0;
+    }
 
     if (help_flag) {
         help();
