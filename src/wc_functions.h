@@ -14,6 +14,7 @@ typedef struct {
     int words;
     int characters;
     int longest_line;
+    bool file_found;
 } FileStats;
 
 

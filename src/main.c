@@ -70,8 +70,20 @@ void print_stats(ThreadData *data) {
     pthread_mutex_lock(&output_mutex);
 
     const char *name = strcmp(data->filename, "-") == 0
-                           ? "stdin"
+                           ? ""
                            : data->filename;
+
+    if (!data->stats->file_found) {
+        printf("Datei %s nicht gefunden!\n", name);
+        pthread_mutex_unlock(&output_mutex);
+        return;
+    }
+
+    if (data->stats->lines == 0 && data->stats->words == 0) {
+        printf("Datei %s ist leer!\n", name);
+        pthread_mutex_unlock(&output_mutex);
+        return;
+    }
 
     if (data->human_readable) {
         printf("\nDatei: %s\n", name);

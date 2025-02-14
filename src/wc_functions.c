@@ -16,13 +16,19 @@ void process_file_or_stdin(const char *filename, FileStats *stats) {
         return;
     }
 
+    stats->lines = 0;
+    stats->words = 0;
+    stats->characters = 0;
+    stats->longest_line = 0;
+    stats->file_found = true;
+
     int fd;
     if (filename == NULL || strcmp(filename, "-") == 0) {
         fd = STDIN_FILENO;
     } else {
         fd = open(filename, O_RDONLY);
         if (fd == -1) {
-            perror("Fehler beim Öffnen der Datei");
+            stats->file_found = false;
             return;
         }
     }
