@@ -4,13 +4,15 @@
 #include <string.h>
 #include <ctype.h>
 #include <pthread.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <stdbool.h>
 
 #define BUFFER_SIZE 1024
 
 void process_file_or_stdin(const char *filename, FileStats *stats) {
     int fd;
     if (filename == NULL || strcmp(filename, "-") == 0) {
-        // "-" = stdin
         fd = STDIN_FILENO;
     } else {
         fd = open(filename, O_RDONLY);
@@ -26,6 +28,15 @@ void process_file_or_stdin(const char *filename, FileStats *stats) {
     bool in_word = false;
 
     while ((bytes_read = read(fd, buffer, BUFFER_SIZE)) > 0) {
+        if (bytes_read == -1) {
+
+            perror("Fehler beim Lesen der Datei");
+            if (fd != STDIN_FILENO) {
+                close(fd);
+            }
+            return;
+        }
+
         for (ssize_t i = 0; i < bytes_read; i++) {
             stats->characters++;
 
@@ -48,12 +59,17 @@ void process_file_or_stdin(const char *filename, FileStats *stats) {
         }
     }
 
+
     if (current_length > stats->longest_line) {
         stats->longest_line = current_length;
     }
 
+
     if (fd != STDIN_FILENO) {
-        close(fd);
+        if (close(fd) == -1) {
+
+            perror("Fehler beim Schließen der Datei");
+        }
     }
 }
 
