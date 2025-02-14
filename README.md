@@ -65,3 +65,6 @@ Falls eine Datei nicht existiert oder ein falscher Dateiname angegeben wird, gib
 ./new_wc leere_Datei.txt
 ```
 **Ausgabe:** Datei [Dateiname] ist leer!
+
+
+Dieses Projekt ist eine Anforderung des Studienfachs Systemnahe-Programmierung der Fakultät Informatik und Wirtschaftsinformatik der Technischen Hochschule Würzburg/Schweinfurt und dient zu Übungszwecken des grundverständnis der C Programmierung.
