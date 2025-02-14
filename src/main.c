@@ -70,7 +70,7 @@ void print_stats(ThreadData *data) {
     pthread_mutex_lock(&output_mutex);
 
     const char *name = strcmp(data->filename, "-") == 0
-                           ? ""
+                           ? "stdin"
                            : data->filename;
 
     if (!data->stats->file_found) {
@@ -96,7 +96,7 @@ void print_stats(ThreadData *data) {
         if (data->words) printf("%d ", data->stats->words);
         if (data->chars) printf("%d ", data->stats->characters);
         if (data->max_line) printf("%d ", data->stats->longest_line);
-        printf("%s\n", name);
+        if (strcmp(name, "stdin") != 0)printf("%s\n", name);
     }
 
     pthread_mutex_unlock(&output_mutex);
