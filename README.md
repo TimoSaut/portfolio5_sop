@@ -1,7 +1,7 @@
 # WC-Kommando in C (mit Threads)
 
 ## Überblick
-Dieses Projekt implementiert eine erweiterte Version des Linux-Befehls `wc` (Word Count) in C. Das Programm zählt die Anzahl der Zeilen und Wörter in einer Datei und gibt das Ergebnis auf der Standardausgabe (`stdout`) aus. **Die Byte-Zählung aus `wc` wurde nicht implementiert.**
+Dieses Projekt implementiert eine abgewandelte Version des Linux-Befehls `wc` (Word Count) in C. Das Programm zählt die Anzahl der Zeilen und Wörter in einer Datei und gibt das Ergebnis auf der Standardausgabe (`stdout`) aus. **Die Byte-Zählung aus `wc` wurde nicht implementiert.**
 
 Falls mehrere Dateien angegeben werden, nutzt das Programm **Threads**, um die Verarbeitung zu parallelisieren und die Laufzeit zu optimieren.
 
