@@ -13,7 +13,7 @@ void help() {
     printf("Optionen:\n");
     printf("  -l        Zeilen zählen\n");
     printf("  -w        Wörter zählen\n");
-    printf("  -c        Zeichen zählen\n");
+    printf("  -m        Zeichen zählen\n");
     printf("  -L        Längste Zeile anzeigen\n");
     printf("  -h        Menschenlesbare Ausgabe\n");
     printf("  --help    Diese Hilfe anzeigen\n");
@@ -41,7 +41,7 @@ void parse_args(int argc, char *argv[],
         } else if (strcmp(argv[i], "-w") == 0) {
             *words = 1;
             no_flag = 0;
-        } else if (strcmp(argv[i], "-c") == 0) {
+        } else if (strcmp(argv[i], "-m") == 0) {
             *chars = 1;
             no_flag = 0;
         } else if (strcmp(argv[i], "-L") == 0) {
